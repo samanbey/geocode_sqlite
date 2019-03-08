@@ -34,6 +34,7 @@ from PyQt5.QtSql import *
 from collections import deque
 from datetime import *
 from time import *
+from .resources import *
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'geocode_sqlite_dialog_base.ui'), resource_suffix='')
