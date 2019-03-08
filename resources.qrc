@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/geocode_sqlite" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

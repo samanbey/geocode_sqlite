@@ -1,0 +1,33 @@
+# Mandatory items:
+
+[general]
+name=Geocode Sqlite table
+qgisMinimumVersion=3.0
+description=This plugin helps geocoding an sqlite table using OSM Nominatim
+version=0.5
+author=Mátyás Gede
+email=saman@map.elte.hu
+
+about=This plugin helps geocoding an sqlite table using OSM Nominatim
+
+tracker=https://github.com/samanbey/geocode_sqlite/issues
+repository=https://github.com/samanbey/geocode_sqlite
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+#changelog=0.5 - first public version
+
+# Tags are comma separated with spaces allowed
+tags=python,geocoding,sqlite
+
+homepage=https://samanbey.github.io/geocode_sqlite
+category=Database
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
