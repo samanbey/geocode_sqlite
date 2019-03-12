@@ -3,8 +3,8 @@
 [general]
 name=Geocode Sqlite table
 qgisMinimumVersion=3.0
-description=This plugin helps geocoding an sqlite table using OSM Nominatim
-version=0.5
+description=This plugin helps geocoding an Sqlite table using OSM Nominatim
+version=0.6
 author=Mátyás Gede
 email=saman@map.elte.hu
 
@@ -18,6 +18,7 @@ repository=https://github.com/samanbey/geocode_sqlite
 
 # Uncomment the following line and add your changelog:
 changelog=0.5 - first public version
+    0.6 - search can be constrained by bounding box
 
 # Tags are comma separated with spaces allowed
 tags=python,geocoding,sqlite

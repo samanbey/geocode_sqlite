@@ -69,7 +69,8 @@ class GeocodeSqliteDialog(QtWidgets.QDialog, FORM_CLASS):
     def help(self):
         """Help 'dialog'"""
         QMessageBox.information(self,"Help",'Select the database file, the table and the field to geocode, '+
-            'then press "Start".<br/>Depending on the number of records, processing may take several minutes.')
+            'then press "Start".<br/>Setting the W (west), S (south), E (east) and N (north) fields of BBOX limits the search to the given geographical quadrangle.'+
+            '<br/>Depending on the number of records, processing may take several minutes.')
         
     def openDb(self):
         """Opens DB file and refreshs table list"""
@@ -107,17 +108,49 @@ class GeocodeSqliteDialog(QtWidgets.QDialog, FORM_CLASS):
             le.selectAll()
             
         if self.pbStart.text()=="Start":
+            # get form values
             dbFile=self.fwDBFile.filePath()
             tblName=self.cbTable.currentText()
             fldName=self.cbField.currentText()
             geomFld=self.leGeomField.text()
             noGeom=self.cbNoGeom.isChecked()
+            # variable for extra url params
+            urlp=""
+            # create bbox restriction if fields set;
+            N=self.leN.text()
+            S=self.leS.text()
+            E=self.leE.text()
+            W=self.leW.text()
+            if (N+S+E+W!=""):
+                # bbox fields not empty. check numbers
+                try:
+                    nv=float(N)
+                except ValueError:
+                    numberError(self.leN)
+                    return
+                try:
+                    sv=float(S)
+                except ValueError:
+                    numberError(self.leS)
+                    return
+                try:
+                    ev=float(E)
+                except ValueError:
+                    numberError(self.leE)
+                    return
+                try:
+                    wv=float(W)
+                except ValueError:
+                    numberError(self.leW)
+                    return
+                # create url param
+                urlp=urlp+"&bounded=1&viewbox="+W+","+S+","+E+","+N
             # change button text to stop
             self.pbStart.setText("Stop");
             # clear log box
             self.teLog.clear()
             # create and start thread
-            self.WT=WorkerThread(qgis.utils.iface.mainWindow(),dbFile,tblName,fldName,geomFld,noGeom)
+            self.WT=WorkerThread(qgis.utils.iface.mainWindow(),dbFile,tblName,fldName,geomFld,noGeom,urlp)
             self.WT.jobFinished.connect(self.jobFinishedFromThread)
             self.WT.addMsg.connect(self.msgFromThread)
             self.WT.setTotal.connect(self.setTotal)
@@ -154,13 +187,14 @@ class WorkerThread( QThread ):
     setTotal=pyqtSignal(int)
     setProgress=pyqtSignal(int)
        
-    def __init__( self, parentThread,dbFile,tblName,fldName,geomFld,noGeom):
+    def __init__( self, parentThread,dbFile,tblName,fldName,geomFld,noGeom,urlp):
         QThread.__init__( self, parentThread )
         self.dbFile=dbFile
         self.tblName=tblName
         self.fldName=fldName
         self.geomFld=geomFld
         self.noGeom=noGeom
+        self.urlp=urlp
     def run( self ):
         self.running = True
         success = self.doWork()
@@ -208,7 +242,7 @@ class WorkerThread( QThread ):
                 self.jobFinished.emit(False)
                 return False
             # send geocoding request
-            url="https://nominatim.openstreetmap.org/search?format=json&q="+names[i]
+            url="https://nominatim.openstreetmap.org/search?format=json&q="+names[i]+self.urlp
             # self.addMsg.emit(url);
             self.addMsg.emit("Sending request for "+names[i]+"...")
             req=requests.get(url)
